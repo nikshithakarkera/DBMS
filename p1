@@ -1,0 +1,148 @@
+create table BRANCH(
+Branchid char(20) primary key,
+Branchname varchar(30) not null,
+HoD varchar(50) not null);
+
+
+create table STUDENT(
+USN varchar(20) primary key,
+Name varchar(50) not null,
+address varchar(50) not null,
+Branchid char(20),
+Sem int(10),
+foreign key(Branchid) references Branch(Branchid));
+
+
+create table AUTHOR(
+Authorid int(10) primary key,
+Authorname varchar(50) not null,
+Country char(10),
+Age int(10));
+
+
+create table BOOK(
+Bookid varchar(20) primary key,
+Bookname varchar(50) not null,
+Authorid int(10),
+Publisher char(20),
+Branchid char(20),
+foreign key(Branchid) references Branch(Branchid),
+foreign key(Authorid)reference Author(Authorid));
+
+
+create table BORROW(
+USN varchar(20) ,
+Bookid char(20),
+Borrowed_date date,
+primary key(USN,Bookid),
+foreign key(USN) references Student(USN),
+foreign key(Bookid) 
+
+
+
+insert into BRANCH values('B1','MCA','DR.Vandana B.S.');
+insert into BRANCH values('B2','MBA','Prof.Shekar Iyer');
+insert into BRANCH values('B3','Mech','DR.Vandana');
+insert into BRANCH values('B4','AIML','DR.Iyer');
+insert into BRANCH values('B5','CS','Dr.Shailesh');
+
+insert into STUDENT values('4VP21MC066','Anil','Kabaka','B1','1');
+insert into STUDENT values('4VP21MC016','Chethan','Uppinangady','B2','2');
+insert into STUDENT values('4VP21MC026','Nikshitha','Perne','B3','4');
+insert into STUDENT values('4VP21MB017','Chaithra','Puttur','B4','4');
+insert into STUDENT values('4VP21CS028','Karthik','Mangalore','B5','5');
+
+insert into AUTHOR values(1,'Ramez Elmasri','Arlinhton',51);
+insert into AUTHOR values(2,'Baidyanth Mishra','India',52);
+insert into AUTHOR values(2,'Ellis Horowits','US',41);
+insert into AUTHOR values(3,'Ellis Horowits','US',41);
+insert into AUTHOR values(4,'Deepak Kehamani','India',39);
+insert into AUTHOR values(5,'Yunus','Japan',34);
+
+
+insert into BOOK values('BK1','DBMS',1,'PEARSON','B1');
+insert into BOOK values('BK2','RESEARCH METHODOLOGY',2,'PEARSON','B2');
+insert into BOOK values('BK3','DATA STRUCTURE',3,'Mr Graw','B3');
+insert into BOOK values('BK4','ALGORITHM',3,'Mr Graw','B3');
+insert into BOOK values('BK5','Artificial Intelligence',4,'Mr Graw','B4');
+
+
+insert into Borrow values('4VP21MC066','BK1','2022-6-21');
+insert into Borrow values('4VP21MC016','BK2','2021-3-16');
+insert into Borrow values('4VP21MC026','BK3','2021-3-16');
+insert into Borrow values('4VP21MC016','BK4','2021-3-16')
+insert into Borrow values('4VP21MB017','BK4','2021-3-16')
+
+1)
+mysql> select * from STUDENT,BRANCH where Branchname='MCA' and SEM=2 and STUDENT.Branchid=BRANCH.Branchid;
++------------+-----------+-------------+----------+------+----------+------------+--------------+
+| USN        | Name      | Address     | Branchid | SEM  | Branchid | Branchname | HoD          |
++------------+-----------+-------------+----------+------+----------+------------+--------------+
+| 4VP21MC006 | CHARITHRA | BELTHANGADY | B1       |    2 | B1       | MCA        | VANDANA B.S. |
+| 4VP21MC024 | NAVYA     | KALLADKA    | B1       |    2 | B1       | MCA        | VANDANA B.S. |
+| 4VP21MC026 | NIKSHITHA | PERNE       | B1       |    2 | B1       | MCA        | VANDANA B.S. |
+| 4VP21MC046 | SHRADDHA  | MANI        | B1       |    2 | B1       | MCA        | VANDANA B.S. |
++------------+-----------+-------------+----------+------+----------+------------+--------------+
+
+
+2)
+mysql> select distinct Name from STUDENT,BORROW where STUDENT.USN not in(select USN from BORROW);
++-----------+
+| Name      |
++-----------+
+| NISHA     |
+| CHARITHRA |
+| CHAITHRA  |
+| KARTHIK   |
+| NAVYA     |
+| SHRADDHA  |
++-----------+
+
+3)mysql> select STUDENT.USN,Name,Branchname,Authorname,Bookname,Borrowed_date 
+    -> from STUDENT,BRANCH,BOOK,BORROW,AUTHOR
+    -> where STUDENT.USN=BORROW.USN 
+    -> and STUDENT.Branchid=BRANCH.Branchid
+    -> and BORROW.Bookid=BOOK.Bookid
+    -> and BOOK.Authorid=AUTHOR.Authorid
+    -> and STUDENT.SEM=2
+    -> and BRANCH.Branchname="MCA";
++------------+-----------+------------+----------------+---------------+---------------+
+| USN        | Name      | Branchname | Authorname     | Bookname      | Borrowed_date |
++------------+-----------+------------+----------------+---------------+---------------+
+| 4VP21MC026 | NIKSHITHA | MCA        | Ellis Horowitz | Data Stucture | 2021-03-16    |
++------------+-----------+------------+----------------+---------------+---------------+
+
+4)
+mysql> select BOOK.Authorid,Authorname, count(*) from BOOK,AUTHOR where BOOK.Authorid=AUTHOR.Authorid group by BOOK.Authorid;
++----------+-------------------+----------+
+| Authorid | Authorname        | count(*) |
++----------+-------------------+----------+
+| 1        | Ramez Elmasri     |        1 |
+| 2        | Baidyanath Mishra |        1 |
+| 3        | Ellis Horowitz    |        2 |
+| 4        | Yunus             |        1 |
++----------+-------------------+----------+
+
+
+5)
+mysql> select * from STUDENT 
+    -> where USN in(select USN from BORROW group by USN having count(USN)>=2);
++------------+---------+-----------+----------+------+
+| USN        | Name    | Address   | Branchid | SEM  |
++------------+---------+-----------+----------+------+
+| 4VP21MC016 | CHETHAN | MANGALORE | B5       |    4 |
+| 4VP21MC066 | ANIL    | BANGALORE | B3       |    6 |
++------------+---------+-----------+----------+------+
+
+6)
+mysql> select Bookname from BOOK order by Bookname desc;
++----------------------+
+| Bookname             |
++----------------------+
+| Research Methodology |
+| DBMS                 |
+| Data Stucture        |
+| ALGORITHM            |
+| AI                   |
++----------------------+
+
