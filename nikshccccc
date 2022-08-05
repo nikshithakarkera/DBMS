@@ -1,0 +1,153 @@
+mysql> DESC STUDENT;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| USN      | varchar(20) | NO   | PRI | NULL    |       |
+| Name     | char(20)    | YES  |     | NULL    |       |
+| Address  | varchar(20) | YES  |     | NULL    |       |
+| Branchid | varchar(10) | YES  | MUL | NULL    |       |
+| SEM      | int         | YES  |     | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+mysql> DESC BRANCH;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| Branchid   | varchar(10) | NO   | PRI | NULL    |       |
+| Branchname | varchar(10) | YES  |     | NULL    |       |
+| HoD        | char(20)    | YES  |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> DESC BORROW;
++---------------+-------------+------+-----+---------+-------+
+| Field         | Type        | Null | Key | Default | Extra |
++---------------+-------------+------+-----+---------+-------+
+| USN           | varchar(20) | NO   | PRI | NULL    |       |
+| Bookid        | varchar(10) | NO   | PRI | NULL    |       |
+| Borrowed_date | date        | YES  |     | NULL    |       |
++---------------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> DESC AUTHOR;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| Authorid   | char(10)    | NO   | PRI | NULL    |       |
+| Authorname | varchar(20) | YES  |     | NULL    |       |
+| Country    | varchar(20) | YES  |     | NULL    |       |
+| Age        | int         | YES  |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> DESC BOOK;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| Bookid    | varchar(20) | NO   | PRI | NULL    |       |
+| Bookname  | char(40)    | YES  |     | NULL    |       |
+| Authorid  | char(10)    | YES  | MUL | NULL    |       |
+| Publisher | varchar(20) | YES  |     | NULL    |       |
+| Branchid  | varchar(10) | YES  | MUL | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+
+
+mysql> select * from STUDENT;
++------------+-----------+-------------+----------+------+
+| USN        | Name      | Address     | Branchid | SEM  |
++------------+-----------+-------------+----------+------+
+| 4VP21CS025 | NISHA     | NAGARA      | B3       |    2 |
+| 4VP21MC006 | CHARITHRA | BELTHANGADY | B1       |    2 |
+| 4VP21MC016 | CHETHAN   | MANGALORE   | B5       |    4 |
+| 4VP21MC017 | CHAITHRA  | MITTHUR     | B4       |    8 |
+| 4VP21MC018 | KARTHIK   | PUTTUR      | B4       |    4 |
+| 4VP21MC024 | NAVYA     | KALLADKA    | B1       |    2 |
+| 4VP21MC026 | NIKSHITHA | PERNE       | B1       |    2 |
+| 4VP21MC046 | SHRADDHA  | MANI        | B1       |    2 |
+| 4VP21MC066 | ANIL      | BANGALORE   | B3       |    6 |
++------------+-----------+-------------+----------+------+
+9 rows in set (0.00 sec)
+
+mysql> select * from BRANCH;
++----------+------------+--------------------+
+| Branchid | Branchname | HoD                |
++----------+------------+--------------------+
+| B1       | MCA        | VANDANA B.S.       |
+| B2       | MBA        | DR.SHEKAR IYER     |
+| B3       | CS         | PROF.Krishnamohana |
+| B4       | AIML       | Dr.Govindaraju     |
+| B5       | Mech       | Dr.Sudharshan      |
++----------+------------+--------------------+
+5 rows in set (0.00 sec)
+
+mysql> select * from AUTHOR;
++----------+-------------------+-----------+------+
+| Authorid | Authorname        | Country   | Age  |
++----------+-------------------+-----------+------+
+| 1        | Ramez Elmasri     | Arlinhton |   51 |
+| 2        | Baidyanath Mishra | India     |   52 |
+| 3        | Ellis Horowitz    | US        |   41 |
+| 4        | Yunus             | Japan     |   34 |
+| 5        | Deepak kehamani   | India     |   39 |
+| 6        | Ellis Horowits    | US        |   41 |
++----------+-------------------+-----------+------+
+6 rows in set (0.00 sec)
+
+mysql> select * from BOOK;
++--------+----------------------+----------+---------------+----------+
+| Bookid | Bookname             | Authorid | Publisher     | Branchid |
++--------+----------------------+----------+---------------+----------+
+| BK1    | DBMS                 | 1        | PEARSON       | B1       |
+| BK2    | Research Methodology | 2        | Pearson       | B2       |
+| BK3    | Data Stucture        | 3        | M C Grow Hill | B3       |
+| BK4    | AI                   | 4        | M C Grow Hill | B4       |
+| BK5    | ALGORITHM            | 3        | Mr Graw       | B3       |
++--------+----------------------+----------+---------------+----------+
+5 rows in set (0.00 sec)
+
+mysql> select * from BORROW;
++------------+--------+---------------+
+| USN        | Bookid | Borrowed_date |
++------------+--------+---------------+
+| 4VP21MC016 | BK2    | 2021-03-16    |
+| 4VP21MC016 | BK4    | 2021-03-16    |
+| 4VP21MC026 | BK3    | 2021-03-16    |
+| 4VP21MC066 | BK1    | 2022-06-21    |
+| 4VP21MC066 | BK3    | 2022-07-21    |
++------------+--------+---------------+
+
+
+mysql> SELECT * FROM STUDENT S
+    -> WHERE EXISTS(SELECT BR.USN
+    -> FROM BORROW BR,BOOK BK
+    -> WHERE BR.BOOKID=BK.BOOKID AND BR.USN=S.USN
+    -> GROUP BY USN
+    -> HAVING COUNT(DISTINCT AUTHORID)>1);
++------------+---------+-----------+----------+------+
+| USN        | Name    | Address   | Branchid | SEM  |
++------------+---------+-----------+----------+------+
+| 4VP21MC016 | CHETHAN | MANGALORE | B5       |    4 |
+| 4VP21MC066 | ANIL    | BANGALORE | B3       |    6 |
++------------+---------+-----------+----------+------+
+
+5 rows in set (0.00 sec)
+
+
+mysql> SELECT * FROM STUDENT 
+    -> WHERE EXISTS(
+    ->     SELECT BR.USN 
+    ->      FROM BORROW BR,BOOK BK
+    ->      WHERE BR.BOOKID=BK.BOOKID
+    ->      AND BR.USN=STUDENT.USN
+    ->      GROUP BY USN
+    ->      HAVING COUNT(BK.PUBLISHER)=1);
++------------+-----------+---------+----------+------+
+| USN        | Name      | Address | Branchid | SEM  |
++------------+-----------+---------+----------+------+
+| 4VP21MC026 | NIKSHITHA | PERNE   | B1       |    2 |
++------------+-----------+---------+----------+------+
+1 row in set (0.00 sec)
+
