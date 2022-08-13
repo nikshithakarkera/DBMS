@@ -134,18 +134,6 @@ mysql> select * from STUDENT
 | 4VP21MC066 | ANIL    | BANGALORE | B3       |    6 |
 +------------+---------+-----------+----------+------+
 
-7)
-mysql> select Bookname from BOOK order by Bookname desc;
-+----------------------+
-| Bookname             |
-+----------------------+
-| Research Methodology |
-| DBMS                 |
-| Data Stucture        |
-| ALGORITHM            |
-| AI                   |
-+----------------------+
-
 
 6) mysql> SELECT * FROM STUDENT S
     -> WHERE EXISTS(SELECT BR.USN
