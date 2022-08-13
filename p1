@@ -134,7 +134,7 @@ mysql> select * from STUDENT
 | 4VP21MC066 | ANIL    | BANGALORE | B3       |    6 |
 +------------+---------+-----------+----------+------+
 
-6)
+7)
 mysql> select Bookname from BOOK order by Bookname desc;
 +----------------------+
 | Bookname             |
@@ -146,3 +146,42 @@ mysql> select Bookname from BOOK order by Bookname desc;
 | AI                   |
 +----------------------+
 
+
+6) mysql> SELECT * FROM STUDENT S
+    -> WHERE EXISTS(SELECT BR.USN
+    -> FROM BORROW BR,BOOK BK
+    -> WHERE BR.BOOKID=BK.BOOKID AND BR.USN=S.USN
+    -> GROUP BY USN
+    -> HAVING COUNT(DISTINCT AUTHORID)>1);
++------------+---------+-----------+----------+------+
+| USN        | Name    | Address   | Branchid | SEM  |
++------------+---------+-----------+----------+------+
+| 4VP21MC016 | CHETHAN | MANGALORE | B5       |    4 |
+| 4VP21MC066 | ANIL    | BANGALORE | B3       |    6 |
++------------+---------+-----------+----------+------+
+
+7)
+mysql> select Bookname from BOOK order by Bookname desc;
++----------------------+
+| Bookname             |
++----------------------+
+| Research Methodology |
+| DBMS                 |
+| Data Stucture        |
+| ALGORITHM            |
+| AI                   |
++----------------------+
+
+8) mysql> SELECT * FROM STUDENT 
+    -> WHERE EXISTS(
+    ->     SELECT BR.USN 
+    ->      FROM BORROW BR,BOOK BK
+    ->      WHERE BR.BOOKID=BK.BOOKID
+    ->      AND BR.USN=STUDENT.USN
+    ->      GROUP BY USN
+    ->      HAVING COUNT(BK.PUBLISHER)=1);
++------------+-----------+---------+----------+------+
+| USN        | Name      | Address | Branchid | SEM  |
++------------+-----------+---------+----------+------+
+| 4VP21MC026 | NIKSHITHA | PERNE   | B1       |    2 |
++------------+-----------+---------+----------+------+
