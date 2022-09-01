@@ -1,0 +1,179 @@
+CREATE TABLE TPLACE(
+TPID INT(10) PRIMARY KEY,
+HISTORY VARCHAR(20),
+KILOMETERS INT(3),
+STATE VARCHAR(20),
+TPNAME VARCHAR(20));
+
+CREATE TABLE TOURIST(
+TID INT(5) PRIMARY KEY,
+COUNTRY VARCHAR(20),
+AGE INT(10),
+TNAME VARCHAR(20));
+
+CREATE TABLE VISITS(
+TPID INT(3)REFERENCES TPLACE(TPID),
+TID INT REFERENCES TOURIST(TID),
+VDATE DATE,
+PRIMARY KEY(TPID,TID)); 
+
+CREATE TABLE EMAIL(
+TID INT(10)REFERENCES TOURIST(TID),
+EMAIL VARCHAR(20),
+PRIMARY KEY(TID,EMAIL)); 
+
+INSERT INTO TPLACE VALUES(11,'BEAUTY',160,'KARNATAKA','OOTY');
+INSERT INTO TPLACE VALUES(12,'JOGFALLS',161,'KARNATAKA','SHIVAMOGA');
+INSERT INTO TPLACE VALUES(13,'CAVE',162,'KARNATAKA','YANA');
+INSERT INTO TPLACE VALUES(14,'ARCHITECTURE',163,'UTTARPRADESH','AGRA');
+INSERT INTO TPLACE VALUES(15,'HILL',164,'HIMACHAL','SHIMLA'); 
+
+INSERT INTO TOURIST VALUES(21,'INDIA',50,'ANAND');
+INSERT INTO TOURIST VALUES(22,'KOREA',44,'NALINI');
+INSERT INTO TOURIST VALUES(23,'INDIA',19,'KARTHIK');
+INSERT INTO TOURIST VALUES(24,'SHRILANKA',22,'NISHA');
+INSERT INTO TOURIST VALUES(25,'CHINA',23,'CHETHAN');
+
+INSERT INTO VISITS VALUES(12,23,'2014-09-14');
+INSERT INTO VISITS VALUES(11,24,'2019-02-15');
+INSERT INTO VISITS VALUES(13,21,'2016-04-20');
+INSERT INTO VISITS VALUES(14,25,'2018-12-24');
+INSERT INTO VISITS VALUES(15,22,'2018-04-16');
+
+INSERT INTO EMAIL VALUES(21,'ANAND@GMAIL.COM');
+INSERT INTO EMAIL VALUES(22,'NALINI@GMAIL.COM');
+INSERT INTO EMAIL VALUES(23,'KARTHI@GMAIL.COM');
+INSERT INTO EMAIL VALUES(24,'NISHU@GMAIL.COM');
+INSERT INTO EMAIL VALUES(24,'CHETHU@GMAIL.COM');
+
+SELECT * FROM TPLACE;
++------+--------------+------------+--------------+-----------+
+| TPID | HISTORY      | KILOMETERS | STATE        | TPNAME    |
++------+--------------+------------+--------------+-----------+
+|   11 | BEAUTY       |        160 | KARNATAKA    | OOTY      |
+|   12 | JOGFALLS     |        161 | KARNATAKA    | SHIVAMOGA |
+|   13 | CAVE         |        162 | KARNATAKA    | YANA      |
+|   14 | ARCHITECTURE |        163 | UTTARPRADESH | AGRA      |
+|   15 | HILL         |        164 | HIMACHAL     | SHIMLA    |
++------+--------------+------------+--------------+-----------+
+
+mysql> select * from TOURIST;
++-----+-----------+------+---------+
+| TID | COUNTRY   | AGE  | TNAME   |
++-----+-----------+------+---------+
+|  21 | INDIA     |   50 | ANAND   |
+|  22 | KOREA     |   44 | NALINI  |
+|  23 | INDIA     |   19 | KARTHIK |
+|  24 | SHRILANKA |   22 | NISHA   |
+|  25 | CHINA     |   23 | CHETHAN |
++-----+-----------+------+---------+
+
+mysql> select * from VISITS;
++------+-----+------------+
+| TPID | TID | VDATE      |
++------+-----+------------+
+|   11 |  24 | 2019-02-15 |
+|   11 |  25 | 2014-09-14 |
+|   12 |  21 | 2014-09-14 |
+|   12 |  22 | 2014-09-14 |
+|   12 |  23 | 2014-09-14 |
+|   12 |  24 | 2014-09-14 |
+|   12 |  25 | 2014-09-14 |
+|   13 |  21 | 2016-04-20 |
+|   13 |  24 | 2014-09-14 |
+|   13 |  25 | 2014-09-14 |
+|   14 |  25 | 2018-12-24 |
+|   15 |  22 | 2018-04-16 |
+|   15 |  25 | 2014-09-14 |
++------+-----+------------+
+
+
+mysql> select * from EMAIL;
++-----+------------------+
+| TID | EMAIL            |
++-----+------------------+
+|  21 | ANAND@GMAIL.COM  |
+|  22 | NALINI@GMAIL.COM |
+|  23 | KARTHI@GMAIL.COM |
+|  24 | CHETHU@GMAIL.COM |
+|  24 | NISHU@GMAIL.COM  |
++-----+------------------+
+
+1)List the state name which is having maximum number of tourist places.
+SELECT STATE,COUNT(TPID)
+FROM TPLACE
+GROUP BY STATE ORDER BY COUNT(TPID)DESC LIMIT 1;
+
++-----------+-------------+
+| STATE     | COUNT(TPID) |
++-----------+-------------+
+| KARNATAKA |           3 |
++-----------+-------------+
+
+2)List details of Tourist place where maximum number of tourists visited.
+SELECT TP.TPID,TP.TPNAME,TP.STATE,COUNT(V.TID)
+FROM TPLACE TP,VISITS V
+WHERE V.TPID=TP.TPID GROUP BY V.TPID
+ORDER BY COUNT(V.TPID)DESC LIMIT 1;
+
++------+--------+-----------+--------------+
+| TPID | TPNAME | STATE     | COUNT(V.TID) |
++------+--------+-----------+--------------+
+|   11 | OOTY   | KARNATAKA |            1 |
++------+--------+-----------+--------------+
+
+
+3)List the details of tourists visited all tourist places of the state “KARNATAKA”.
+SELECT * 
+FROM TOURIST 
+WHERE TID IN(
+SELECT TID 
+FROM VISITS,TPLACE 
+WHERE VISITS.TPID=TPLACE.TPID AND STATE='KARNATAKA'
+GROUP BY TID HAVING COUNT(STATE) IN(
+SELECT COUNT(STATE)
+FROM TPLACE 
+WHERE STATE='KARNATAKA'));
+
++-----+-----------+------+-------+
+| TID | COUNTRY   | AGE  | TNAME |
++-----+-----------+------+-------+
+|  24 | SHRILANKA |   22 | NISHA |
++-----+-----------+------+-------+
+
+
+4)Display the details of the tourists visited at least one tourist place of the state, but visited
+all states tourist places.
+SELECT * FROM TOURIST 
+WHERE TID IN(
+SELECT TID
+FROM VISITS,TPLACE
+WHERE VISITS.TPID=TPLACE.TPID
+GROUP BY TID HAVING COUNT(DISTINCT STATE)
+IN (SELECT COUNT(DISTINCT STATE) 
+FROM TPLACE));
+
++-----+---------+------+---------+
+| TID | COUNTRY | AGE  | TNAME   |
++-----+---------+------+---------+
+|  25 | CHINA   |   23 | CHETHAN |
++-----+---------+------+---------+
+
+
+5)Display the details of the tourist place visited by the tourists of all country.
+SELECT * 
+FROM TPLACE 
+WHERE TPID IN(
+SELECT TPID
+FROM VISITS,TOURIST 
+WHERE VISITS.TID=TOURIST.TID 
+GROUP BY TPID HAVING COUNT(DISTINCT COUNTRY)=(
+SELECT COUNT(DISTINCT COUNTRY)
+FROM TOURIST));
+
++------+----------+------------+-----------+-----------+
+| TPID | HISTORY  | KILOMETERS | STATE     | TPNAME    |
++------+----------+------------+-----------+-----------+
+|   12 | JOGFALLS |        161 | KARNATAKA | SHIVAMOGA |
++------+----------+------------+-----------+-----------+
+
